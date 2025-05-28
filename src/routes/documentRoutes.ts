@@ -7,7 +7,7 @@ import { openai } from '../utils/openai';
 import { handleDocumentUpload } from '../controllers/docController';
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage() });
+const upload = multer({ dest: 'uploads/' });
 
 router.post('/', upload.single('document'), handleDocumentUpload);
 router.post('/upload', upload.single('file'), async (req, res) => {
