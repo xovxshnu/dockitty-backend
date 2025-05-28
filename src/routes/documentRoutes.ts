@@ -5,11 +5,14 @@ import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 import { openai } from '../utils/openai';
 import { handleDocumentUpload } from '../controllers/docController';
+import { authenticate } from '../middleware/authMiddleware';
 
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ storage: multer.memoryStorage() });
 
-router.post('/', upload.single('document'), handleDocumentUpload);
+// 🔐 Protect both routes using authenticate middleware
+router.post('/', authenticate, upload.single('document'), handleDocumentUpload);
+router.get('/', authenticate, getDocuments);
 router.post('/upload', upload.single('file'), async (req, res) => {
   const file = req.file;
 
