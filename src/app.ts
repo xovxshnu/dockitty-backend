@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-// import authRoutes from './routes/authRoutes';
+import authRoutes from './routes/authRoutes'; // ✅ Import here
 import docRoutes from './routes/docRoutes';
 import documentRoutes from './routes/documentRoutes';
 
@@ -12,11 +12,10 @@ app.use(cors({
   credentials: true,
 }));
 
-
 app.use(express.json());
-app.use('/api/documents', documentRoutes);
 
-// app.use('/api/auth', authRoutes);
+app.use('/api/documents', documentRoutes);
+app.use('/api/auth', authRoutes);      // ✅ Now this works
 app.use('/api/docs', docRoutes);
 
 export default app;
