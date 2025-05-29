@@ -1,10 +1,6 @@
 import { Request, Response } from 'express';
 import prisma from '../prisma/client';
-import { Configuration, OpenAIApi } from 'openai';
-
-const openai = new OpenAIApi(
-  new Configuration({ apiKey: process.env.OPENAI_API_KEY })
-);
+import { openai } from '../utils/openai';
 
 export const handleDocumentUpload = async (req: Request, res: Response) => {
   const file = req.file;
@@ -16,21 +12,18 @@ export const handleDocumentUpload = async (req: Request, res: Response) => {
   const content = file.buffer.toString('utf-8'); // Only handles .txt, not .pdf or .docx
 
   try {
-    const completion = await openai.createChatCompletion({
-      model: 'gpt-4',
-      messages: [
-        {
-          role: 'system',
-          content: 'You are a grammar correction assistant.',
-        },
-        {
-          role: 'user',
-          content: `Correct the grammar of the following text:\n${content}`,
-        },
-      ],
-    });
+    const completion = await openai.chat.completions.create({
+  model: 'gpt-4',
+  messages: [
+    { role: 'system',
+      content: 'You are a grammar correction assistant.' },
+    { role: 'user', 
+      content: `Correct the grammar of the following text:\n${content}` },
+  ],
+});
 
-    const correctedText = completion.data.choices[0].message?.content || '';
+
+    const correctedText = completion.choices[0].message?.content || '';
 
     const doc = await prisma.document.create({
       data: {

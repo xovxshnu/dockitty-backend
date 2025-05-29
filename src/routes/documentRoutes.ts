@@ -4,8 +4,9 @@ import fs from 'fs';
 import pdfParse from 'pdf-parse';
 import mammoth from 'mammoth';
 import { openai } from '../utils/openai';
-import { handleDocumentUpload } from '../controllers/docController';
 import { authenticate } from '../middleware/authMiddleware';
+import { handleDocumentUpload, getDocuments } from '../controllers/docController';
+
 
 const router = express.Router();
 const upload = multer({ storage: multer.memoryStorage() });
