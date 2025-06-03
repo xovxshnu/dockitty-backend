@@ -1,15 +1,16 @@
-import jwt from 'jsonwebtoken';
-import { Request, Response, NextFunction } from 'express';
+import passport from 'passport';
+import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ message: 'No token provided' });
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID!,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+  callbackURL: '/auth/google/callback'
+},
+async (accessToken, refreshToken, profile, done) => {
+  // Check if user exists in DB or create one
+  // You can use Prisma here to find/create
+  return done(null, profile);
+}));
 
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-    req.user = decoded; // Attach user to request
-    next();
-  } catch (err) {
-    res.status(403).json({ message: 'Invalid token' });
-  }
-};
+passport.serializeUser((user, done) => done(null, user));
+passport.deserializeUser((user, done) => done(null, user));
