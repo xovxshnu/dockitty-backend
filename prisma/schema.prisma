@@ -1,25 +1,26 @@
-generator client {
-  provider = "prisma-client-js"
-}
-
+// This is the datasource block (for DB connection)
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+// This is the generator block (for Prisma Client)
+generator client {
+  provider = "prisma-client-js"
+}
+
+// Your models start here
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  documents Document[]
-  role      String   @default("user")
+  id        String     @id @default(cuid())
+  email     String     @unique
+  name      String?
+  documents Document[] // Relation to Document model
 }
 
 model Document {
-  id         String   @id @default(uuid())
-  userId     String
+  id         String   @id @default(cuid())
   content    String
-  corrected  String?
   createdAt  DateTime @default(now())
-  User       User     @relation(fields: [userId], references: [id])
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
 }
