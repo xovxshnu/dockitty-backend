@@ -46,7 +46,7 @@ passport.use(new GoogleStrategy({
 
     done(null, { id: user.id, email: user.email });
   } catch (err) {
-    done(err as any, null);
+    done(err as any, false);
   }
 }));
 

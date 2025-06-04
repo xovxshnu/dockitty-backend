@@ -14,8 +14,10 @@ model User {
   id        String     @id @default(cuid())
   email     String     @unique
   name      String?
-  documents Document[] // Relation to Document model
+  password  String?    
+  documents Document[]
 }
+
 
 model Document {
   id         String   @id @default(cuid())
