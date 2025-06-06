@@ -25,30 +25,34 @@ passport.deserializeUser((user: any, done) => {
   done(null, user);
 });
 
-passport.use(new GoogleStrategy({
-  clientID: process.env.GOOGLE_CLIENT_ID!,
-  clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
-  callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5000/auth/google/callback'
-}, async (accessToken, refreshToken, profile, done) => {
-  try {
-    const email = profile.emails?.[0].value;
-    const name = profile.displayName;
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL!,
+    },
+    async (accessToken, refreshToken, profile, done) => {
+      const email = profile.emails?.[0].value;
 
-    if (!email) return done(new Error("No email found in Google profile"));
+      if (!email) return done(null, false);
 
-    let user = await prisma.user.findUnique({ where: { email } });
+      let user = await prisma.user.findUnique({ where: { email } });
 
-    if (!user) {
-      user = await prisma.user.create({
-        data: { email, name }
-      });
+      if (!user) {
+        user = await prisma.user.create({
+          data: {
+            email,
+            name: profile.displayName,
+            id: profile.id, // store as `id` or change to a UUID if you want
+          },
+        });
+      }
+
+      return done(null, user);
     }
-
-    done(null, { id: user.id, email: user.email });
-  } catch (err) {
-    done(err as any, false);
-  }
-}));
+  )
+);
 
 // Route to trigger Google OAuth login
 router.get('/google',
