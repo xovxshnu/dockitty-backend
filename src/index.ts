@@ -1,15 +1,26 @@
-import app from './app';
-import dotenv from 'dotenv';
+import express from 'express';
+import passport from 'passport';
+import session from 'express-session';
 import cors from 'cors';
-import googleAuthRoutes from './routes/auth/google'; 
+import authRoutes from './routes/authRoutes';
+import './config/passport'; // import this to initialize the strategy
 
+const app = express();
 
-dotenv.config();
+app.use(cors({
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+}));
+app.use(session({
+  secret: 'your-secret',
+  resave: false,
+  saveUninitialized: true,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
-const PORT = process.env.PORT || 5000;
-app.use('/auth/google', googleAuthRoutes); 
+app.use('/api/auth', authRoutes);
 
-
-app.listen(PORT, () => {
-  console.log(`🚀 Dockitty Backend running on http://localhost:${PORT}`);
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
 });

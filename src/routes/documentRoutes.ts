@@ -6,9 +6,25 @@ import mammoth from 'mammoth';
 import { openai } from '../utils/openai';
 import { authenticate } from '../middleware/authMiddleware';
 import { handleDocumentUpload, getDocuments } from '../controllers/docController';
-
+import { verifyToken } from '../middleware/verifyToken';
+import prisma from '../lib/prisma';
 
 const router = express.Router();
+router.get('/', verifyToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const documents = await prisma.document.findMany({
+      where: { userId },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(documents);
+  } catch (err) {
+    console.error('Error fetching documents:', err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
 const upload = multer({ storage: multer.memoryStorage() });
 
 // 🔐 Protect both routes using authenticate middleware
