@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import authRoutes from './routes/authRoutes'; // ✅ Import here
+// import authRoutes from './routes/authRoutes'; // ✅ Import here
 import docRoutes from './routes/docRoutes';
 import documentRoutes from './routes/documentRoutes';
 import googleAuthRoutes from './routes/auth/google';
@@ -15,7 +15,7 @@ app.use(cors({
 app.use(express.json());
 app.use('/auth', googleAuthRoutes);
 app.use('/api/documents', documentRoutes);
-app.use('/api/auth', authRoutes);      // ✅ Now this works
+// app.use('/api/auth', authRoutes);      // ✅ Now this works
 app.use('/api/docs', docRoutes);
 
 export default app;

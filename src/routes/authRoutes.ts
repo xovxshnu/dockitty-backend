@@ -1,9 +1,11 @@
 import express from 'express';
-import passport from 'passport';
-import jwt from 'jsonwebtoken';
+// import passport from 'passport';
+// import jwt from 'jsonwebtoken';
 
 const router = express.Router();
 
+// Google Auth routes (currently commented out)
+/*
 router.get(
   '/google',
   passport.authenticate('google', { scope: ['profile', 'email'] })
@@ -32,5 +34,6 @@ router.get(
     res.redirect(`${process.env.CLIENT_URL}/?token=${token}`);
   }
 );
+*/
 
 export default router;
