@@ -15,7 +15,8 @@ passport.use(
       // In production, you'd store/retrieve user from DB here
       return done(null, {
         id: profile.id,
-        email: profile.emails?.[0].value,
+        email: profile.emails && profile.emails[0] ? profile.emails[0].value : '',
+
       });
     }
   )
