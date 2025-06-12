@@ -1,37 +1,32 @@
-import { Configuration, OpenAIApi } from 'openai';
-import dotenv from 'dotenv';
+import OpenAI from "openai";
+import dotenv from "dotenv";
 
 dotenv.config();
 
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY as string,
 });
-const openai = new OpenAIApi(configuration);
 
-/**
- * Corrects grammar using OpenAI's GPT model.
- * @param text Raw user text
- * @returns Corrected text
- */
-export const correctTextWithAI = async (text: string): Promise<string> => {
+export const correctGrammar = async (text: string): Promise<string> => {
   try {
-    const prompt = `Correct the grammar, punctuation, and clarity of the following text:\n\n${text}`;
-
-    const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
+    const response = await openai.chat.completions.create({
+      model: "gpt-3.5-turbo",
       messages: [
         {
-          role: 'user',
-          content: prompt,
+          role: "system",
+          content: "You are a grammar correction assistant.",
+        },
+        {
+          role: "user",
+          content: `Correct the grammar of the following text:\n${text}`,
         },
       ],
-      temperature: 0.2,
+      temperature: 0.3,
     });
 
-    const correctedText = response.data.choices[0].message?.content?.trim();
-    return correctedText || text;
+    return response.choices[0].message.content || "No correction found.";
   } catch (error) {
-    console.error('OpenAI correction failed:', error);
-    return text; // Return original text on failure
+    console.error("Grammar correction failed:", error);
+    return "Error: Grammar correction failed.";
   }
 };
