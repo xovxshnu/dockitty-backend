@@ -21,7 +21,12 @@ passport.use(
     async (accessToken, refreshToken, profile, done) => {
       try {
         const user = await findOrCreateUser(profile);
-        return done(null, user); // ✅ this matches User interface
+       return done(null, {
+  id: profile.id,
+  email: profile.emails?.[0].value || "no-email@example.com",
+  name: profile.displayName || "No Name",
+} as User);
+ // ✅ this matches User interface
       } catch (err) {
         return done(err, undefined);
       }
